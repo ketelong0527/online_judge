@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}提交 #{{ submission.id }} - 在线编程练习平台{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="text-white mb-0"><i class="fas fa-file-code"></i> 提交 #{{ submission.id }}</h2>
+            <span style="background: white; color: #e91e63; padding: 6px 16px; border-radius: 12px; font-weight: 600;">{{ submission.get_status_display }}</span>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card" style="border: 2px solid #fce4ec;">
+                    <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+                        <h5 class="text-white font-weight-bold"><i class="fas fa-info-circle"></i> 提交信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong style="color: #880e4f;">用户:</strong> <a href="/users/{{ submission.user.username }}/" style="color: #e91e63; font-weight: 600;">{{ submission.user.username }}</a></p>
+                        <p><strong style="color: #880e4f;">题目:</strong> <a href="/problems/{{ submission.problem.id }}/" style="color: #e91e63; font-weight: 600;">{{ submission.problem.title }}</a></p>
+                        <p><strong style="color: #880e4f;">语言:</strong> <span style="background: #fce4ec; color: #e91e63; padding: 4px 12px; border-radius: 8px; font-weight: 600;">{{ submission.get_language_display }}</span></p>
+                        <p><strong style="color: #880e4f;">状态:</strong> 
+                            {% if submission.status == 'Accepted' %}
+                                <span style="color: #4caf50; font-weight: 600;"><i class="fas fa-check-circle"></i> 通过</span>
+                            {% elif submission.status == 'Wrong Answer' %}
+                                <span style="color: #f44336; font-weight: 600;"><i class="fas fa-times-circle"></i> 答案错误</span>
+                            {% elif submission.status == 'Runtime Error' %}
+                                <span style="color: #ff9800; font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> 运行时错误</span>
+                            {% else %}
+                                <span style="color: #ff9800; font-weight: 600;">{{ submission.get_status_display }}</span>
+                            {% endif %}
+                        </p>
+                        <p><strong style="color: #880e4f;">得分:</strong> <span style="color: #e91e63; font-weight: 600;">{{ submission.score }}</span></p>
+                        <p><strong style="color: #880e4f;">执行时间:</strong> <span style="color: #4caf50; font-weight: 600;">{{ submission.execution_time }}ms</span></p>
+                        <p><strong style="color: #880e4f;">内存占用:</strong> {{ submission.execution_memory }}KB</p>
+                        <p><strong style="color: #880e4f;">提交时间:</strong> {{ submission.submitted_at|date:"Y-m-d H:i:s" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card" style="border: 2px solid #fce4ec;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+                        <h5 class="text-white font-weight-bold"><i class="fas fa-code"></i> 代码</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre style="font-family: monospace; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #f48fb1; min-height: 200px; white-space: pre-wrap; padding: 1.5rem; border-radius: 12px; border: 2px solid #fce4ec; margin: 0;">{{ submission.code }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if test_results %}
+        <div class="card mb-4" style="border: 2px solid #fce4ec;">
+            <div class="card-header" style="background: linear-gradient(90deg, #4caf50 0%, #81c784 100%);">
+                <h5 class="text-white font-weight-bold"><i class="fas fa-list-check"></i> 测试用例结果</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="background: #e8f5e9; color: #2e7d32; font-weight: 600;">测试用例</th>
+                            <th style="background: #e8f5e9; color: #2e7d32; font-weight: 600;">状态</th>
+                            <th style="background: #e8f5e9; color: #2e7d32; font-weight: 600;">是否通过</th>
+                            <th style="background: #e8f5e9; color: #2e7d32; font-weight: 600;">时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in test_results %}
+                        <tr>
+                            <td>测试用例 {{ result.test_case.id }}</td>
+                            <td>{{ result.get_status_display }}</td>
+                            <td>
+                                {% if result.is_passed %}
+                                    <span style="color: #4caf50; font-weight: 600;"><i class="fas fa-check"></i> 通过</span>
+                                {% else %}
+                                    <span style="color: #f44336; font-weight: 600;"><i class="fas fa-times"></i> 未通过</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ result.execution_time }}ms</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if submission.error_message %}
+        <div class="card mb-4" style="border: 2px solid #ffebee;">
+            <div class="card-header" style="background: linear-gradient(90deg, #f44336 0%, #ef5350 100%);">
+                <h5 class="text-white font-weight-bold"><i class="fas fa-exclamation-triangle"></i> 错误信息</h5>
+            </div>
+            <div class="card-body" style="background: #ffebee;">
+                <pre style="color: #c62828; margin: 0; font-family: monospace;">{{ submission.error_message }}</pre>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="mt-4 d-flex gap-3">
+            <a href="/problems/{{ submission.problem.id }}/edit/" class="btn btn-primary btn-lg">
+                <i class="fas fa-code"></i> 重新提交
+            </a>
+            <a href="/submissions/" class="btn btn-secondary btn-lg">
+                <i class="fas fa-arrow-left"></i> 返回列表
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

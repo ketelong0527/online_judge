@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}个人资料 - {{ user.username }} - 在线编程练习平台{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+        <h2 class="text-white mb-0"><i class="fas fa-user"></i> 个人资料</h2>
+    </div>
+    
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card" style="border: 2px solid #fce4ec;">
+                    <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+                        <h5 class="text-white font-weight-bold">基本信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <p><strong style="color: #880e4f;">用户名:</strong> <span style="color: #e91e63; font-weight: 600;">{{ user.username }}</span></p>
+                            <p><strong style="color: #880e4f;">邮箱:</strong> {{ user.email }}</p>
+                            <p><strong style="color: #880e4f;">积分:</strong> <span style="color: #e91e63; font-size: 20px; font-weight: 700;">{{ user.rating }}</span></p>
+                            <p><strong style="color: #880e4f;">段位:</strong> <span style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%); color: white; padding: 4px 12px; border-radius: 8px; font-weight: 600;">{{ user.rank }}</span></p>
+                            <p><strong style="color: #880e4f;">解题数:</strong> <span style="color: #4caf50; font-weight: 600;">{{ user.total_solved }}</span></p>
+                            <p><strong style="color: #880e4f;">总提交:</strong> {{ user.total_submissions }}</p>
+                            <p><strong style="color: #880e4f;">通过率:</strong> <span style="color: #880e4f; font-weight: 600;">{{ user.acceptance_rate }}%</span></p>
+                        </div>
+                        
+                        {% if user.school %}
+                            <p><strong style="color: #880e4f;">学校:</strong> {{ user.school }}</p>
+                        {% endif %}
+                        {% if user.location %}
+                            <p><strong style="color: #880e4f;">所在地:</strong> {{ user.location }}</p>
+                        {% endif %}
+                        {% if user.github_url %}
+                            <p><strong style="color: #880e4f;">GitHub:</strong> <a href="{{ user.github_url }}" target="_blank" style="color: #e91e63;">{{ user.github_url }}</a></p>
+                        {% endif %}
+                        {% if user.blog_url %}
+                            <p><strong style="color: #880e4f;">博客:</strong> <a href="{{ user.blog_url }}" target="_blank" style="color: #e91e63;">{{ user.blog_url }}</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                {% if user.bio %}
+                    <div class="card mb-4" style="border: 2px solid #fce4ec;">
+                        <div class="card-header" style="background: #fce4ec;">
+                            <h5 style="color: #880e4f; font-weight: 600;"><i class="fas fa-file-text"></i> 个人简介</h5>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: #424242;">{{ user.bio }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="card mb-4" style="border: 2px solid #fce4ec;">
+                    <div class="card-header" style="background: linear-gradient(90deg, #4caf50 0%, #81c784 100%);">
+                        <h5 class="text-white font-weight-bold"><i class="fas fa-history"></i> 最近活动</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="/submissions/?user={{ user.id }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-list"></i> 查看所有提交记录
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card" style="border: 2px solid #fce4ec;">
+                    <div class="card-header" style="background: linear-gradient(90deg, #f44336 0%, #ef5350 100%);">
+                        <h5 class="text-white font-weight-bold"><i class="fas fa-sign-out-alt"></i> 安全设置</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="/users/logout/" class="btn btn-danger btn-lg">
+                            <i class="fas fa-sign-out-alt"></i> 退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ problem.title }} - Online Judge{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-gradient-to-r from-primary to-primary">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="text-white mb-0"><i class="fas fa-code"></i> {{ problem.id }}. {{ problem.title }}</h2>
+            <span class="difficulty-badge difficulty-{{ problem.difficulty.lower }}">
+                {% if problem.difficulty == 'Easy' %}简单{% elif problem.difficulty == 'Medium' %}中等{% else %}困难{% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="mb-3">
+            <span class="badge bg-secondary me-2"><i class="fas fa-clock"></i> {{ problem.time_limit }}ms</span>
+            <span class="badge bg-secondary"><i class="fas fa-memory"></i> {{ problem.memory_limit }}MB</span>
+        </div>
+        
+        <div class="mb-4">
+            <h3><i class="fas fa-file-alt"></i> 题目描述</h3>
+            <p class="text-muted">{{ problem.description|linebreaks }}</p>
+        </div>
+        
+        <div class="mb-4">
+            <h3><i class="fas fa-keyboard"></i> 输入格式</h3>
+            <pre class="bg-light p-3 rounded">{{ problem.input_description }}</pre>
+        </div>
+        
+        <div class="mb-4">
+            <h3><i class="fas fa-output"></i> 输出格式</h3>
+            <pre class="bg-light p-3 rounded">{{ problem.output_description }}</pre>
+        </div>
+        
+        {% if problem.hint %}
+        <div class="mb-4">
+            <h3><i class="fas fa-lightbulb"></i> 提示</h3>
+            <p class="text-info">{{ problem.hint }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="mb-4">
+            <h3><i class="fas fa-file-code"></i> 示例</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">示例输入</div>
+                        <div class="card-body">
+                            <pre>{{ problem.sample_input }}</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">示例输出</div>
+                        <div class="card-body">
+                            <pre>{{ problem.sample_output }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex gap-3">
+            <a href="/problems/{{ problem.id }}/edit/" class="btn btn-primary"><i class="fas fa-code"></i> 开始编写代码</a>
+            <a href="/submissions/?problem={{ problem.id }}" class="btn btn-secondary"><i class="fas fa-history"></i> 查看提交记录</a>
+            <a href="/problems/" class="btn btn-outline-primary"><i class="fas fa-arrow-left"></i> 返回列表</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

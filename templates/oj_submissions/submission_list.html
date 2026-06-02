@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}提交记录 - 在线编程练习平台{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+        <h2 class="text-white mb-0"><i class="fas fa-file-code"></i> 提交记录</h2>
+    </div>
+    
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <form method="get" class="d-flex gap-2">
+                    <select name="status" class="form-select" onchange="this.form.submit()" style="border: 2px solid #fce4ec; border-radius: 12px;">
+                        <option value="">全部状态</option>
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="language" class="form-select" onchange="this.form.submit()" style="border: 2px solid #fce4ec; border-radius: 12px;">
+                        <option value="">全部语言</option>
+                        {% for value, label in language_choices %}
+                        <option value="{{ value }}" {% if language == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> 筛选
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">ID</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">用户</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">题目</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">语言</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">状态</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">时间</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">内存</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">提交时间</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for submission in page_obj %}
+                    <tr>
+                        <td><a href="/submissions/{{ submission.id }}/" style="color: #e91e63; font-weight: 600;">{{ submission.id }}</a></td>
+                        <td><a href="/users/{{ submission.user.username }}/" style="color: #e91e63; font-weight: 600;">{{ submission.user.username }}</a></td>
+                        <td><a href="/problems/{{ submission.problem.id }}/" style="color: #e91e63; font-weight: 600;">{{ submission.problem.title }}</a></td>
+                        <td><span style="background: #fce4ec; color: #e91e63; padding: 4px 12px; border-radius: 8px; font-weight: 600;">{{ submission.get_language_display }}</span></td>
+                        <td>
+                            {% if submission.status == 'Accepted' %}
+                                <span style="color: #4caf50; font-weight: 600;"><i class="fas fa-check-circle"></i> 通过</span>
+                            {% elif submission.status == 'Wrong Answer' %}
+                                <span style="color: #f44336; font-weight: 600;"><i class="fas fa-times-circle"></i> 答案错误</span>
+                            {% elif submission.status == 'Runtime Error' %}
+                                <span style="color: #ff9800; font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> 运行时错误</span>
+                            {% else %}
+                                <span style="color: #ff9800; font-weight: 600;"><i class="fas fa-clock"></i> {{ submission.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ submission.execution_time }}ms</td>
+                        <td>{{ submission.execution_memory }}KB</td>
+                        <td>{{ submission.submitted_at|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            <a href="/submissions/{{ submission.id }}/" class="btn btn-sm btn-primary" style="border-radius: 8px;">
+                                <i class="fas fa-eye"></i> 查看
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center" style="color: #e91e63; padding: 3rem;">
+                            <i class="fas fa-file-code fa-4x mb-3"></i>
+                            <h5>暂无提交记录</h5>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status }}&language={{ language }}" style="color: #e91e63; border-radius: 12px;">
+                            <i class="fas fa-chevron-left"></i> 上一页
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&status={{ status }}&language={{ language }}" 
+                           style="{% if page_obj.number == num %}background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%); border-color: #e91e63; color: white;{% else %}color: #e91e63;{% endif %} border-radius: 12px;">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status }}&language={{ language }}" style="color: #e91e63; border-radius: 12px;">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

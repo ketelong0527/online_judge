@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}注册 - 在线编程练习平台{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+                <h2 class="text-white text-center mb-0"><i class="fas fa-user-plus"></i> 用户注册</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="username" class="form-label" style="color: #880e4f; font-weight: 600; font-size: 16px;">
+                            <i class="fas fa-user"></i> 用户名
+                        </label>
+                        <input type="text" name="username" class="form-control" id="username" placeholder="请输入用户名" required 
+                               style="border: 2px solid #fce4ec; border-radius: 12px; padding: 12px; font-size: 16px;">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="form-label" style="color: #880e4f; font-weight: 600; font-size: 16px;">
+                            <i class="fas fa-envelope"></i> 邮箱
+                        </label>
+                        <input type="email" name="email" class="form-control" id="email" placeholder="请输入邮箱" required
+                               style="border: 2px solid #fce4ec; border-radius: 12px; padding: 12px; font-size: 16px;">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label" style="color: #880e4f; font-weight: 600; font-size: 16px;">
+                            <i class="fas fa-lock"></i> 密码
+                        </label>
+                        <input type="password" name="password" class="form-control" id="password" placeholder="请输入密码" required
+                               style="border: 2px solid #fce4ec; border-radius: 12px; padding: 12px; font-size: 16px;">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="confirm_password" class="form-label" style="color: #880e4f; font-weight: 600; font-size: 16px;">
+                            <i class="fas fa-lock"></i> 确认密码
+                        </label>
+                        <input type="password" name="confirm_password" class="form-control" id="confirm_password" placeholder="请再次输入密码" required
+                               style="border: 2px solid #fce4ec; border-radius: 12px; padding: 12px; font-size: 16px;">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-user-plus"></i> 注册
+                    </button>
+                </form>
+                
+                <div class="mt-4 text-center">
+                    <p style="color: #666;">已有账号？<a href="/users/login/" style="color: #e91e63; font-weight: 600;">立即登录</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

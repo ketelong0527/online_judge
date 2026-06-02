@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}{{ problem.title }} - 代码编辑器{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left Panel - Code Editor -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+                    <h5 class="text-white mb-0"><i class="fas fa-code"></i> 代码编辑</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Language Selection -->
+                    <div class="mb-4">
+                        <label class="form-label" style="color: #880e4f; font-weight: 600; font-size: 16px;">选择语言</label>
+                        <div class="btn-group w-100">
+                            <button type="button" class="btn active" data-lang="python" onclick="setLanguage('python')" id="lang-python" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%); border: none; color: white; padding: 12px 16px; font-size: 16px; font-weight: 600;">Python 3</button>
+                            <button type="button" class="btn" data-lang="c" onclick="setLanguage('c')" id="lang-c" style="background: #fce4ec; border: none; color: #e91e63; padding: 12px 16px; font-size: 16px; font-weight: 600;">C</button>
+                            <button type="button" class="btn" data-lang="cpp" onclick="setLanguage('cpp')" id="lang-cpp" style="background: #fce4ec; border: none; color: #e91e63; padding: 12px 16px; font-size: 16px; font-weight: 600;">C++</button>
+                            <button type="button" class="btn" data-lang="java" onclick="setLanguage('java')" id="lang-java" style="background: #fce4ec; border: none; color: #e91e63; padding: 12px 16px; font-size: 16px; font-weight: 600;">Java</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Editor -->
+                    <div class="mb-3">
+                        <label class="form-label" style="color: #880e4f; font-weight: 600;">代码</label>
+                        <textarea id="codeEditor" class="form-control" style="font-family: monospace; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #f48fb1; height: 300px; border: 2px solid #fce4ec;" placeholder="在此输入代码...">print("Hello World!")
+print("2 + 2 =", 2 + 2)</textarea>
+                    </div>
+                    
+                    <!-- Input -->
+                    <div class="mb-3">
+                        <label class="form-label" style="color: #880e4f; font-weight: 600;">输入（可选）</label>
+                        <textarea id="testInput" class="form-control" style="font-family: monospace; height: 100px; border: 2px solid #fce4ec;"></textarea>
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button onclick="runCode()" class="btn btn-success btn-lg">
+                            <i class="fas fa-play"></i> 运行代码
+                        </button>
+                        <button onclick="submitCode()" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane"></i> 提交代码
+                        </button>
+                        <button onclick="resetCode()" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-undo"></i> 重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Output -->
+            <div class="card mt-3">
+                <div class="card-header" style="background: linear-gradient(90deg, #4caf50 0%, #81c784 100%);">
+                    <h5 class="text-white mb-0"><i class="fas fa-terminal"></i> 输出结果</h5>
+                </div>
+                <div class="card-body">
+                    <pre id="outputResult" style="font-family: monospace; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #f48fb1; min-height: 100px; white-space: pre-wrap; padding: 1rem; border-radius: 8px; border: 2px solid #fce4ec;">等待运行...</pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Panel - Problem Description -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+                    <h4 class="text-white mb-1">{{ problem.title }}</h4>
+                    <span class="badge" style="background: white; color: #e91e63; font-weight: 600;">
+                        {% if problem.difficulty == 'Easy' %}简单{% elif problem.difficulty == 'Medium' %}中等{% else %}困难{% endif %}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 style="color: #880e4f; font-weight: 600;"><i class="fas fa-book"></i> 题目描述</h5>
+                        <p style="color: #424242;">{{ problem.description|linebreaks }}</p>
+                    </div>
+                    
+                    {% if problem.input_description %}
+                    <div class="mb-4">
+                        <h5 style="color: #880e4f; font-weight: 600;"><i class="fas fa-sign-in-alt"></i> 输入格式</h5>
+                        <p style="color: #424242;">{{ problem.input_description|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if problem.output_description %}
+                    <div class="mb-4">
+                        <h5 style="color: #880e4f; font-weight: 600;"><i class="fas fa-sign-out-alt"></i> 输出格式</h5>
+                        <p style="color: #424242;">{{ problem.output_description|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if problem.sample_input or problem.sample_output %}
+                    <div class="row mb-4">
+                        <h5 style="color: #880e4f; font-weight: 600;"><i class="fas fa-flask"></i> 示例</h5>
+                        <div class="col-md-6">
+                            <div class="card" style="border: 2px solid #fce4ec;">
+                                <div class="card-header" style="background: #fce4ec; color: #880e4f; font-weight: 600;">
+                                    <i class="fas fa-arrow-down"></i> 输入
+                                </div>
+                                <div class="card-body">
+                                    <pre style="color: #424242; margin: 0;">{{ problem.sample_input }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card" style="border: 2px solid #fce4ec;">
+                                <div class="card-header" style="background: #fce4ec; color: #880e4f; font-weight: 600;">
+                                    <i class="fas fa-arrow-up"></i> 输出
+                                </div>
+                                <div class="card-body">
+                                    <pre style="color: #424242; margin: 0;">{{ problem.sample_output }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var currentLanguage = 'python';
+
+function setLanguage(lang) {
+    currentLanguage = lang;
+    var buttons = document.querySelectorAll('[data-lang]');
+    buttons.forEach(function(btn) {
+        btn.style.background = '#fce4ec';
+        btn.style.color = '#e91e63';
+    });
+    var selectedBtn = document.getElementById('lang-' + lang);
+    selectedBtn.style.background = 'linear-gradient(90deg, #e91e63 0%, #f48fb1 100%)';
+    selectedBtn.style.color = 'white';
+}
+
+function runCode() {
+    var code = document.getElementById('codeEditor').value;
+    var input = document.getElementById('testInput').value;
+    var output = document.getElementById('outputResult');
+    
+    output.textContent = '正在运行...';
+    
+    fetch('/problems/api/run/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            code: code,
+            language: currentLanguage,
+            input: input
+        })
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            var result = data.output || '(空)';
+            output.textContent = result + '\n---\n执行时间: ' + data.time + 'ms';
+        } else {
+            output.textContent = '错误:\n' + data.error;
+        }
+    })
+    .catch(function(error) {
+        output.textContent = '请求失败:\n' + error.message;
+    });
+}
+
+function submitCode() {
+    var code = document.getElementById('codeEditor').value;
+    var output = document.getElementById('outputResult');
+    
+    if (!code.trim()) {
+        alert('请先编写代码！');
+        return;
+    }
+    
+    output.textContent = '正在提交...';
+    
+    fetch('/problems/{{ problem.id }}/submit/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            code: code,
+            language: currentLanguage
+        })
+    })
+    .then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else if (response.status === 302) {
+            var redirectUrl = response.headers.get('Location');
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            }
+        } else {
+            throw new Error('服务器错误: ' + response.status);
+        }
+    })
+    .then(function(data) {
+        if (data && data.redirect_url) {
+            window.location.href = data.redirect_url;
+        } else if (data && data.status) {
+            output.textContent = '提交成功！\n状态: ' + data.status;
+        }
+    })
+    .catch(function(error) {
+        output.textContent = '提交失败:\n' + error.message;
+    });
+}
+
+function resetCode() {
+    if (currentLanguage === 'python') {
+        document.getElementById('codeEditor').value = 'print("Hello World!")\nprint("2 + 2 =", 2 + 2)';
+    } else if (currentLanguage === 'c') {
+        document.getElementById('codeEditor').value = '#include <stdio.h>\n\nint main() {\n    printf("Hello World!\\n");\n    printf("2 + 2 = %d\\n", 2+2);\n    return 0;\n}';
+    } else if (currentLanguage === 'cpp') {
+        document.getElementById('codeEditor').value = '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello World!" << endl;\n    cout << "2 + 2 = " << 2+2 << endl;\n    return 0;\n}';
+    } else if (currentLanguage === 'java') {
+        document.getElementById('codeEditor').value = 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello World!");\n        System.out.println("2 + 2 = " + (2+2));\n    }\n}';
+    }
+}
+</script>
+{% endblock %}

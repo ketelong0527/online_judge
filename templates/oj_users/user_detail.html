@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }} - Online Judge{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-gradient-to-r from-info to-info">
+        <h2 class="text-white mb-0"><i class="fas fa-user"></i> {{ user.username }}</h2>
+    </div>
+    
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-header bg-primary text-white">基本信息</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <p><strong>积分:</strong> <span class="text-primary">{{ user.rating }}</span></p>
+                            <p><strong>段位:</strong> <span class="badge bg-primary">{{ user.rank }}</span></p>
+                            <p><strong>解题数:</strong> {{ user.total_solved }}</p>
+                            <p><strong>总提交:</strong> {{ user.total_submissions }}</p>
+                            <p><strong>通过率:</strong> {{ user.acceptance_rate }}%</p>
+                        </div>
+                        
+                        {% if user.school %}
+                            <p><strong>学校:</strong> {{ user.school }}</p>
+                        {% endif %}
+                        {% if user.location %}
+                            <p><strong>所在地:</strong> {{ user.location }}</p>
+                        {% endif %}
+                        {% if user.github_url %}
+                            <p><strong>GitHub:</strong> <a href="{{ user.github_url }}" target="_blank" class="text-primary">{{ user.github_url }}</a></p>
+                        {% endif %}
+                        {% if user.blog_url %}
+                            <p><strong>博客:</strong> <a href="{{ user.blog_url }}" target="_blank" class="text-primary">{{ user.blog_url }}</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                {% if user.bio %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-secondary text-white"><i class="fas fa-file-text"></i> 个人简介</div>
+                        <div class="card-body">
+                            <p>{{ user.bio }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="card">
+                    <div class="card-header bg-success text-white"><i class="fas fa-history"></i> 最近活动</div>
+                    <div class="card-body">
+                        <a href="/submissions/?user={{ user.id }}" class="btn btn-primary">查看所有提交记录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

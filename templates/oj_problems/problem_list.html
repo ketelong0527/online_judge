@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}题目列表 - 在线编程练习平台{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header" style="background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%);">
+        <h2 class="text-white mb-0"><i class="fas fa-heart"></i> 题目列表</h2>
+    </div>
+    
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form class="d-flex" method="get">
+                    <input type="text" name="search" class="form-control me-2" placeholder="搜索题目..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> 搜索</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-end gap-2">
+                    <form method="get" id="filterForm">
+                        <select name="difficulty" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                            <option value="">全部难度</option>
+                            <option value="Easy" {% if difficulty == 'Easy' %}selected{% endif %}>简单</option>
+                            <option value="Medium" {% if difficulty == 'Medium' %}selected{% endif %}>中等</option>
+                            <option value="Hard" {% if difficulty == 'Hard' %}selected{% endif %}>困难</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>标题</th>
+                        <th>难度</th>
+                        <th>通过数</th>
+                        <th>总提交</th>
+                        <th>通过率</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for problem in page_obj %}
+                    <tr>
+                        <td><span style="color: #e91e63; font-weight: 600;">{{ problem.id }}</span></td>
+                        <td><a href="/problems/{{ problem.id }}/" style="color: #e91e63; font-weight: 500;">{{ problem.title }}</a></td>
+                        <td>
+                            <span class="difficulty-badge difficulty-{{ problem.difficulty.lower }}">
+                                {% if problem.difficulty == 'Easy' %}简单{% elif problem.difficulty == 'Medium' %}中等{% else %}困难{% endif %}
+                            </span>
+                        </td>
+                        <td><i class="fas fa-check-circle" style="color: #4caf50;"></i> {{ problem.accepted_submissions }}</td>
+                        <td><i class="fas fa-code" style="color: #f48fb1;"></i> {{ problem.total_submissions }}</td>
+                        <td><span style="color: #880e4f; font-weight: 600;">{{ problem.acceptance_rate }}%</span></td>
+                        <td>
+                            <a href="/problems/{{ problem.id }}/" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
+                            <a href="/problems/{{ problem.id }}/edit/" class="btn btn-sm btn-primary"><i class="fas fa-code"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center" style="color: #e91e63; padding: 2rem;">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <h5>暂无题目</h5>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&difficulty={{ difficulty }}" style="color: #e91e63;">
+                            <i class="fas fa-chevron-left"></i> 上一页
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&search={{ search_query }}&difficulty={{ difficulty }}" 
+                           style="{% if page_obj.number == num %}background: linear-gradient(90deg, #e91e63 0%, #f48fb1 100%); border-color: #e91e63;{% else %}color: #e91e63;{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&difficulty={{ difficulty }}" style="color: #e91e63;">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
