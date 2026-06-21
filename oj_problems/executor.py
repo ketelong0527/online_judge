@@ -53,10 +53,11 @@ class CodeExecutor:
         
         self.config = self.LANGUAGE_CONFIG[language]
     
-    def execute(self, code: str, input_data: str = '') -> Tuple[str, str, int]:
+    def execute(self, code: str, input_data: str = '') -> Tuple[str, str, int, int]:
         output = ''
         error = ''
         execution_time = 0
+        execution_memory = 0
         
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -95,7 +96,7 @@ class CodeExecutor:
                     
                     if compile_result.returncode != 0:
                         error = f"编译错误:\n{compile_result.stderr}"
-                        return output, error, execution_time
+                        return output, error, execution_time, execution_memory
                 
                 run_cmd = []
                 for cmd in self.config['run_command']:
@@ -128,6 +129,14 @@ class CodeExecutor:
                     )
                     execution_time = int((time.time() - start_time) * 1000)
                     
+                    try:
+                        import psutil
+                        proc = psutil.Process(process.pid)
+                        memory_info = proc.memory_info()
+                        execution_memory = int(memory_info.rss / 1024)
+                    except:
+                        execution_memory = 0
+                    
                     if process.returncode != 0:
                         error = f"运行错误:\n{stderr}"
                     else:
@@ -138,19 +147,21 @@ class CodeExecutor:
                     process.communicate()
                     error = 'Time Limit Exceeded (TLE)'
                     execution_time = self.config['timeout'] * 1000
+                    execution_memory = 0
                     
         except Exception as e:
             error = f"执行错误: {str(e)}"
         
-        return output, error, execution_time
+        return output, error, execution_time, execution_memory
     
     def judge(self, code: str, test_input: str, expected_output: str) -> dict:
-        output, error, exec_time = self.execute(code, test_input)
+        output, error, exec_time, exec_memory = self.execute(code, test_input)
         
         result = {
             'output': output,
             'error': error,
             'execution_time': exec_time,
+            'execution_memory': exec_memory,
             'status': 'Accepted'
         }
         

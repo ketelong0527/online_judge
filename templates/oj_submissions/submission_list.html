@@ -40,8 +40,7 @@
                         <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">题目</th>
                         <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">语言</th>
                         <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">状态</th>
-                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">时间</th>
-                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">内存</th>
+                        <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">执行时间</th>
                         <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">提交时间</th>
                         <th style="background: linear-gradient(90deg, #fce4ec 0%, #f8bbd9 100%); color: #880e4f; font-weight: 600;">操作</th>
                     </tr>
@@ -64,8 +63,7 @@
                                 <span style="color: #ff9800; font-weight: 600;"><i class="fas fa-clock"></i> {{ submission.get_status_display }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ submission.execution_time }}ms</td>
-                        <td>{{ submission.execution_memory }}KB</td>
+                        <td>{{ submission.execution_time|default:"N/A" }}ms</td>
                         <td>{{ submission.submitted_at|date:"Y-m-d H:i:s" }}</td>
                         <td>
                             <a href="/submissions/{{ submission.id }}/" class="btn btn-sm btn-primary" style="border-radius: 8px;">
@@ -75,7 +73,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="9" class="text-center" style="color: #e91e63; padding: 3rem;">
+                        <td colspan="8" class="text-center" style="color: #e91e63; padding: 3rem;">
                             <i class="fas fa-file-code fa-4x mb-3"></i>
                             <h5>暂无提交记录</h5>
                         </td>
