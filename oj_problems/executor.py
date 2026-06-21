@@ -10,19 +10,27 @@ class CodeExecutor:
     TIME_LIMIT = 5
     MEMORY_LIMIT = 256
     
-    def _find_compiler(self, compiler_name):
+    COMPILER_PATHS = {
+        'gcc': ['/usr/bin/gcc', '/usr/local/bin/gcc', '/opt/gcc/bin/gcc'],
+        'g++': ['/usr/bin/g++', '/usr/local/bin/g++', '/opt/gcc/bin/g++'],
+        'javac': ['/usr/bin/javac', '/usr/local/bin/javac'],
+        'python': ['python3', '/usr/bin/python3', '/usr/local/bin/python3'],
+        'node': ['node', '/usr/bin/node', '/usr/local/bin/node']
+    }
+    
+    @classmethod
+    def find_compiler(cls, compiler_name: str) -> str:
         import shutil
-        for path in ['/usr/bin', '/usr/local/bin', '/bin', '/usr/games', '/usr/local/games']:
-            full_path = os.path.join(path, compiler_name)
-            if os.path.exists(full_path):
-                return full_path
+        for path in cls.COMPILER_PATHS.get(compiler_name, []):
+            if shutil.which(path):
+                return path
         return shutil.which(compiler_name) or compiler_name
     
     LANGUAGE_CONFIG = {
         'python': {
             'extension': '.py',
             'compile_command': None,
-            'run_command': ['python3', '{filename}'],
+            'run_command': ['python', '{filename}'],
             'timeout': 5
         },
         'c': {
@@ -91,10 +99,8 @@ class CodeExecutor:
                                 compile_cmd.append(os.path.join(tmpdir, 'main'))
                             elif self.language == 'cpp':
                                 compile_cmd.append(os.path.join(tmpdir, 'main'))
-                        elif cmd in ['gcc', 'g++', 'javac', 'python3', 'python', 'node']:
-                            compile_cmd.append(self._find_compiler(cmd))
                         else:
-                            compile_cmd.append(cmd)
+                            compile_cmd.append(self.find_compiler(cmd))
                     
                     compile_result = subprocess.run(
                         compile_cmd,
@@ -118,10 +124,8 @@ class CodeExecutor:
                         run_cmd.append(filename)
                     elif cmd == '{output}':
                         run_cmd.append(os.path.join(tmpdir, 'main'))
-                    elif cmd in ['gcc', 'g++', 'javac', 'java', 'python3', 'python', 'node']:
-                        run_cmd.append(self._find_compiler(cmd))
                     else:
-                        run_cmd.append(cmd)
+                        run_cmd.append(self.find_compiler(cmd))
                 
                 start_time = time.time()
                 
