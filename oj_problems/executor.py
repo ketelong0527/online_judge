@@ -10,11 +10,19 @@ class CodeExecutor:
     TIME_LIMIT = 5
     MEMORY_LIMIT = 256
     
+    def _find_compiler(self, compiler_name):
+        import shutil
+        for path in ['/usr/bin', '/usr/local/bin', '/bin', '/usr/games', '/usr/local/games']:
+            full_path = os.path.join(path, compiler_name)
+            if os.path.exists(full_path):
+                return full_path
+        return shutil.which(compiler_name) or compiler_name
+    
     LANGUAGE_CONFIG = {
         'python': {
             'extension': '.py',
             'compile_command': None,
-            'run_command': ['python', '{filename}'],
+            'run_command': ['python3', '{filename}'],
             'timeout': 5
         },
         'c': {
@@ -83,6 +91,8 @@ class CodeExecutor:
                                 compile_cmd.append(os.path.join(tmpdir, 'main'))
                             elif self.language == 'cpp':
                                 compile_cmd.append(os.path.join(tmpdir, 'main'))
+                        elif cmd in ['gcc', 'g++', 'javac', 'python3', 'python', 'node']:
+                            compile_cmd.append(self._find_compiler(cmd))
                         else:
                             compile_cmd.append(cmd)
                     
@@ -108,6 +118,8 @@ class CodeExecutor:
                         run_cmd.append(filename)
                     elif cmd == '{output}':
                         run_cmd.append(os.path.join(tmpdir, 'main'))
+                    elif cmd in ['gcc', 'g++', 'javac', 'java', 'python3', 'python', 'node']:
+                        run_cmd.append(self._find_compiler(cmd))
                     else:
                         run_cmd.append(cmd)
                 
