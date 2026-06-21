@@ -76,6 +76,9 @@ class CodeExecutor:
         execution_memory = 0
         
         try:
+            env = os.environ.copy()
+            env['PATH'] = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:' + env.get('PATH', '')
+            
             with tempfile.TemporaryDirectory() as tmpdir:
                 filename = os.path.join(tmpdir, f'main{self.config["extension"]}')
                 
@@ -107,7 +110,8 @@ class CodeExecutor:
                         capture_output=True,
                         text=True,
                         timeout=10,
-                        cwd=tmpdir
+                        cwd=tmpdir,
+                        env=env
                     )
                     
                     if compile_result.returncode != 0:
@@ -135,7 +139,8 @@ class CodeExecutor:
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                     text=True,
-                    cwd=tmpdir
+                    cwd=tmpdir,
+                    env=env
                 )
                 
                 try:
