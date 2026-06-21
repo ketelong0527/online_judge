@@ -133,42 +133,28 @@ class CodeExecutor:
                 
                 start_time = time.time()
                 
-                process = subprocess.Popen(
-                    run_cmd,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    cwd=tmpdir,
-                    env=env
-                )
-                
                 try:
-                    stdout, stderr = process.communicate(
+                    run_result = subprocess.run(
+                        run_cmd,
                         input=input_data.strip(),
-                        timeout=self.config['timeout']
+                        capture_output=True,
+                        text=True,
+                        timeout=self.config['timeout'],
+                        cwd=tmpdir,
+                        env=env
                     )
                     execution_time = int((time.time() - start_time) * 1000)
+                    execution_memory = 0
                     
-                    try:
-                        import psutil
-                        proc = psutil.Process(process.pid)
-                        memory_info = proc.memory_info()
-                        execution_memory = int(memory_info.rss / 1024)
-                    except:
-                        execution_memory = 0
-                    
-                    if process.returncode != 0:
-                        error = f"运行错误:\n{stderr}"
+                    if run_result.returncode != 0:
+                        error = f"运行错误:\n{run_result.stderr}"
                     else:
-                        output = stdout
+                        output = run_result.stdout
                         
                 except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.communicate()
-                    error = 'Time Limit Exceeded (TLE)'
                     execution_time = self.config['timeout'] * 1000
                     execution_memory = 0
+                    error = 'Time Limit Exceeded (TLE)'
                     
         except Exception as e:
             error = f"执行错误: {str(e)}"
